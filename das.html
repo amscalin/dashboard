@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persona Lab - Центр управления</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+            color: #000;
+        }
+
+        header {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, #fff, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            opacity: 0.85;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -1rem;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #000;
+            border-bottom-color: #d4af37;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #000;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        .table th {
+            background: #f5f5f5;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #000, #1a1a1a);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .recommendation {
+            background: #fef3c7;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #d97706;
+            margin-bottom: 1.5rem;
+        }
+
+        .recommendation h3 {
+            color: #d97706;
+            margin-bottom: 0.5rem;
+        }
+
+        .recommendation p {
+            color: #92400e;
+            line-height: 1.6;
+        }
+
+        .countdown {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .countdown-number {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #d4af37;
+            margin: 1rem 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .countdown-number { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Persona Lab</h1>
+        <p>ЦЕНТР УПРАВЛЕНИЯ • ТВОИ МЕТРИКИ</p>
+    </header>
+
+    <div class="container">
+        <!-- Quick Stats with Input -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Подписчики TikTok</div>
+                <div class="stat-value" id="followers-display">2,450</div>
+                <input type="number" class="stat-input" id="followers-input" value="2450" onchange="updateStats()" placeholder="Вводи число">
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Просмотры на неделе</div>
+                <div class="stat-value" id="views-display">1.2M</div>
+                <input type="number" class="stat-input" id="views-input" value="1200000" onchange="updateStats()" placeholder="Вводи число">
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Email подписчики</div>
+                <div class="stat-value" id="email-display">3,240</div>
+                <input type="number" class="stat-input" id="email-input" value="3240" onchange="updateStats()" placeholder="Вводи число">
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Общий доход</div>
+                <div class="stat-value" id="revenue-display">$12,847</div>
+                <input type="number" class="stat-input" id="revenue-input" value="12847" onchange="updateStats()" placeholder="Вводи число">
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('overview')">Обзор</button>
+            <button class="tab-btn" onclick="switchTab('analysis')">Анализ</button>
+            <button class="tab-btn" onclick="switchTab('calendar')">Календарь</button>
+            <button class="tab-btn" onclick="switchTab('recommendations')">Рекомендации</button>
+            <button class="tab-btn" onclick="switchTab('august')">Август</button>
+        </div>
+
+        <!-- TAB 1: OVERVIEW -->
+        <div id="overview" class="tab-content active">
+            <div class="card">
+                <h2>📊 Статистика</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Метрика</th>
+                            <th>Значение</th>
+                            <th>Тренд</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Подписчики</td>
+                            <td id="metric-followers">2,450</td>
+                            <td>✓ +380</td>
+                        </tr>
+                        <tr>
+                            <td>Просмотры</td>
+                            <td id="metric-views">1.2M</td>
+                            <td>✓ +350K</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td id="metric-email">3,240</td>
+                            <td>✓ +920</td>
+                        </tr>
+                        <tr>
+                            <td>Доход</td>
+                            <td id="metric-revenue">$12,847</td>
+                            <td>✓ +8 продаж</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="recommendation">
+                <h3>🔥 ЧТО РАБОТАЕТ</h3>
+                <p>Bad English Ira видео показывают лучшие результаты (487K просмотров). Provocations вторые (312K). СОСРЕДОТОЧЬСЯ НА ЭТИХ ДВУХ ФОРМАТАХ.</p>
+            </div>
+
+            <div class="recommendation" style="background: #dbeafe; border-left-color: #2563eb;">
+                <h3 style="color: #1e40af;">⚡ ЧТО СОКРАТИТЬ</h3>
+                <p style="color: #1e3a8a;">Split Screen формат показывает только 67K просмотров. УДАЛИ этот формат и фокусируйся на лучшем.</p>
+            </div>
+        </div>
+
+        <!-- TAB 2: ANALYSIS -->
+        <div id="analysis" class="tab-content">
+            <div class="card">
+                <h2>📈 Анализ по форматам</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Формат видео</th>
+                            <th>Просмотры</th>
+                            <th>Engagement</th>
+                            <th>Рейтинг</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Bad English Ira</strong></td>
+                            <td>487K</td>
+                            <td>3.2%</td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Provocative</strong></td>
+                            <td>312K</td>
+                            <td>2.8%</td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Реалити Момент</strong></td>
+                            <td>198K</td>
+                            <td>3.5%</td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Split Screen</strong></td>
+                            <td>67K</td>
+                            <td>3.1%</td>
+                            <td>⭐</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 3: CALENDAR -->
+        <div id="calendar" class="tab-content">
+            <div class="card">
+                <h2>📅 Календарь контента</h2>
+                <p style="margin-bottom: 1.5rem; color: #666;">Что нужно снять на эту неделю</p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Время</th>
+                            <th>Формат</th>
+                            <th>Хук</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2026-05-05</td>
+                            <td>9:00 AM</td>
+                            <td>Bad English Ira</td>
+                            <td>Ира объясняет бизнес</td>
+                            <td>✓ Posted</td>
+                        </tr>
+                        <tr>
+                            <td>2026-05-05</td>
+                            <td>2:00 PM</td>
+                            <td>Реалити</td>
+                            <td>Клиент осознала</td>
+                            <td>✓ Posted</td>
+                        </tr>
+                        <tr>
+                            <td>2026-05-06</td>
+                            <td>9:00 AM</td>
+                            <td>Provocative</td>
+                            <td>Коучи обманывают</td>
+                            <td>✓ Posted</td>
+                        </tr>
+                        <tr>
+                            <td>2026-05-07</td>
+                            <td>9:00 AM</td>
+                            <td>Bad English Ira</td>
+                            <td>Ира не знает</td>
+                            <td>Planned</td>
+                        </tr>
+                        <tr>
+                            <td>2026-05-08</td>
+                            <td>9:00 AM</td>
+                            <td>BTS Момент</td>
+                            <td>4am сессия</td>
+                            <td>Planned</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 4: RECOMMENDATIONS -->
+        <div id="recommendations" class="tab-content">
+            <div class="card">
+                <h2>💡 Рекомендации на эту неделю</h2>
+
+                <div class="recommendation">
+                    <h3>📈 НЕДЕЛЯ 1 (MAY 5-11)</h3>
+                    <p><strong>ДЕЛАЙ:</strong> Post 2-3 Bad English Ira видео ежедневно. Это твой лучший формат.</p>
+                    <p><strong>СОКРАЩАЙ:</strong> Удали Split Screen формат полностью. Он не работает.</p>
+                    <p><strong>РЕЗУЛЬТАТ:</strong> Ожидаемо 1.2M просмотров</p>
+                </div>
+
+                <div class="recommendation">
+                    <h3>📈 НЕДЕЛЯ 2 (MAY 12-18)</h3>
+                    <p><strong>ДЕЛАЙ:</strong> Продолжай Bad English Ira. Добавь Provocative посты.</p>
+                    <p><strong>РЕЗУЛЬТАТ:</strong> Ожидаемо 1.5M просмотров</p>
+                </div>
+
+                <div class="recommendation">
+                    <h3>🎯 ДО АВГУСТА</h3>
+                    <p>Поддерживай этот темп. Доходи до 10K подписчиков в конце мая. В июне снимай трансформации клиентов. В июле подготавливай встречу.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: AUGUST -->
+        <div id="august" class="tab-content">
+            <div class="countdown">
+                <div style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9;">Дней до встречи</div>
+                <div class="countdown-number" id="countdown-days">85</div>
+                <p style="font-size: 1.1rem; margin-top: 1rem;">Август 2026 • Основатели встречаются</p>
+            </div>
+
+            <div class="card">
+                <h2>📅 План подготовки</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Задача</th>
+                            <th>Дата</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Post 3x daily</strong></td>
+                            <td>2026-05-31</td>
+                            <td>In Progress</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reach 10K followers</strong></td>
+                            <td>2026-05-31</td>
+                            <td>In Progress</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Film client transformations</strong></td>
+                            <td>2026-06-30</td>
+                            <td>Planned</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Scout reunion location</strong></td>
+                            <td>2026-07-15</td>
+                            <td>Planned</td>
+                        </tr>
+                        <tr>
+                            <td><strong>August Reunion</strong></td>
+                            <td>2026-08-01</td>
+                            <td>Planned</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            <p>Persona Lab Центр управления • Вводи свои числа в карточки вверху • Поделись с Ирой</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Deactivate buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function updateStats() {
+            const followers = parseInt(document.getElementById('followers-input').value) || 0;
+            const views = parseInt(document.getElementById('views-input').value) || 0;
+            const email = parseInt(document.getElementById('email-input').value) || 0;
+            const revenue = parseInt(document.getElementById('revenue-input').value) || 0;
+
+            // Display values
+            document.getElementById('followers-display').textContent = followers.toLocaleString();
+            document.getElementById('views-display').textContent = views >= 1000000 ? (views / 1000000).toFixed(1) + 'M' : (views / 1000).toFixed(0) + 'K';
+            document.getElementById('email-display').textContent = email.toLocaleString();
+            document.getElementById('revenue-display').textContent = '$' + revenue.toLocaleString();
+
+            // Update table
+            document.getElementById('metric-followers').textContent = followers.toLocaleString();
+            document.getElementById('metric-views').textContent = views >= 1000000 ? (views / 1000000).toFixed(1) + 'M' : (views / 1000).toFixed(0) + 'K';
+            document.getElementById('metric-email').textContent = email.toLocaleString();
+            document.getElementById('metric-revenue').textContent = '$' + revenue.toLocaleString();
+
+            // Save to localStorage
+            localStorage.setItem('personaLabStats', JSON.stringify({
+                followers: followers,
+                views: views,
+                email: email,
+                revenue: revenue
+            }));
+        }
+
+        function updateCountdown() {
+            const targetDate = new Date('2026-08-01').getTime();
+            const now = new Date().getTime();
+            const daysLeft = Math.ceil((targetDate - now) / (1000 * 60 * 60 * 24));
+            document.getElementById('countdown-days').textContent = daysLeft > 0 ? daysLeft : 0;
+        }
+
+        // Load saved data
+        function loadData() {
+            const saved = localStorage.getItem('personaLabStats');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('followers-input').value = data.followers;
+                document.getElementById('views-input').value = data.views;
+                document.getElementById('email-input').value = data.email;
+                document.getElementById('revenue-input').value = data.revenue;
+                updateStats();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            updateCountdown();
+            setInterval(updateCountdown, 1000 * 60 * 60);
+        });
+    </script>
+</body>
+</html>
